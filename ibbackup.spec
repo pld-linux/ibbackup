@@ -1,21 +1,17 @@
-%include	/usr/lib/rpm/macros.perl
 Summary:	InnoDB Hot Backup
 Summary(pl.UTF-8):	Gorący backup InnoDB
 Name:		ibbackup
 Version:	3.0.0
-Release:	3
-License:	restricted (http://www.innodb.com/hotbackuplicense.php) / GPL v2 (innobackup)
+Release:	4
+License:	restricted (http://www.innodb.com/hotbackuplicense.php)
 Group:		Applications/Databases
 # Source0Download:	http://www.innodb.com/order.php
 Source0:	%{name}
 # NoSource0-md5:	e0d46c6fb2627ce13d540d4efa935551
 NoSource:	0
-Source1:	http://www.innodb.com/innobackup.txt
-# Source1-md5:	50c91492fd85838598761476712dea3b
-Source2:	%{name}.conf
-Patch0:		innobackup-trigger-tables.patch
+Source1:	%{name}.conf
 URL:		http://www.innodb.com/
-BuildRequires:	rpm-perlprov >= 4.1-13
+Conflicts:	innobackup < 1.4.0
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -47,15 +43,12 @@ Dokumentacja programu dostępna jest pod
 %prep
 %setup -q -c -T
 cp %{SOURCE0} %{name}
-install %{SOURCE1} innobackup
-%patch0 -p1
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_bindir},%{_sysconfdir}}
 install %{name} $RPM_BUILD_ROOT%{_bindir}/ibbackup
-install innobackup $RPM_BUILD_ROOT%{_bindir}/innobackup
-install %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/%{name}.conf
+install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/%{name}.conf
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -63,5 +56,4 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/ibbackup
-%attr(755,root,root) %{_bindir}/innobackup
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/ibbackup.conf
